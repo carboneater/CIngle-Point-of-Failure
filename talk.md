@@ -31,10 +31,10 @@ Malgré toutes les erreurs d'implémentation présentées CI/CD/CD reste _best p
 ```mermaid
 flowchart TD
 
-Commit --> Push
+GC((Commit)) --> Push
 
 subgraph B[Base]
-    A[start] --> CI[npm ci]
+    A((start)) --> CI[npm ci]
     A --> E[ESLint]
     A --> J[jsonnetfmt]
     A --> Madge
@@ -52,7 +52,7 @@ end
 
 subgraph C[Container]
     C1 --> launch[Launch Services ...]
-    C1[start] --> C2[Docker buildx]
+    C1((start)) --> C2[Docker buildx]
     C1 --> C1b[Wait for services...]
     C2 --> C2a["Launch Container"]
     C1b --> C2a
@@ -96,24 +96,30 @@ P --> R[(Package<br/>Registry)]
 ```mermaid
 flowchart LR
 
-Tag --> D
+T((Tag)) --> CD
 R[(Container<br/>Registry)]
 
-subgraph D[Deployment]
+subgraph CD[Deployment]
     C1 --> launch[Launch Services ...]
-    C1[start] --> C2[Docker buildx]
-    C2 -->|push|R
     C1 --> C1b[Wait for services...]
+    C1((start)) --> C2[Docker buildx]
+    C2 -->|push|R
     R -->|pull| C2a
     C2 --> C2a["Launch Container"]
     C1b --> C2a
     C2 --> C3['Wait for container']
     C1b --> C3
     C3 --> C4[Tests]
-    C4 --> C5[Prod]
-    R -->|pull|C5
-    C5 --> C5a[Post-Deploy Tests]
-    C5a --> C6{Alert?}
+    C4 --> C5[Post-Deploy Tests]
+
+    subgraph P[Prod]
+        PD[Deploy on Servers]
+    end
+
+    C4 -->|ssh| P
+    R -->|pull|P
+    P -.-> C5
+    C5 --> C6{Alert?}
 end
 
 ```
