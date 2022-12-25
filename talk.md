@@ -35,10 +35,10 @@ GC((Commit)) --> Push
 
 subgraph B[Base]
     A((start)) --> CI[npm ci]
-    A --> E[ESLint]
+    CI --> E[ESLint]
     A --> J[jsonnetfmt]
     A --> Madge
-    A --> Prettier
+    CI --> Prettier
     CI --> T[TSC]
     T --> M[Mocha/NYC]
     M --> S[Stryker]
@@ -69,7 +69,7 @@ Push --> C
 
 ---
 
-# Sample Pipelines: C Delivery
+# Sample Pipelines: CDelivery
 
 ```mermaid
 flowchart LR
@@ -91,7 +91,7 @@ P --> R[(Package<br/>Registry)]
 
 ---
 
-# Sample Pipelines: C Deployment
+# Sample Pipelines: CDeployment
 
 ```mermaid
 flowchart LR
@@ -129,8 +129,44 @@ end
 # Single Point of Failures
 
 - Drone (CI / CD / CD / Secrets)
-- Artifacts Storage: Verdaccio/Artifactory
-- Docker Registry
+- Artifacts Storage:
+    - Verdaccio
+    - Artifactory
+    - Docker Registry
+
+--
+
+## SPoFs: Artifact Storage
+
+- Restart Services
+- Disk Backup
+- Rebuild Package Index from Tags
+
+--
+
+## SPoFs: Drone (CI / CDel / CDep / Secrets)
+
+- CI: Pipelines as Code
+- Secrets: Secrets Manager
+- CD:
+    - Artifact Storages
+    - Missing Secrets
+    - Firewalls
+- Backups
+- Tâches reproductibles
 
 ---
 
+# Et si on doit faire un rollback?
+
+---
+
+
+
+---
+
+# Morales
+
+- fstab clair
+- Secrets Clairs
+- Stop the world upgrades?
