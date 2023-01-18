@@ -2,27 +2,29 @@
 theme: "black"
 ---
 
-# CIngle Point of Failure
+# CIngle Points of Failure
 
 ## Dark side of automation awesomeness
 
 ---
 
-### ToC
-
----
-
 # $ whoami
 
-- Sample Pipelines
-- SPoFs
-- 
+![duck tape](images/mythbusters.jpeg)
 
----
+(c) Discovery Channel
+
+--
 
 # <3 CI/CD/CD
 
 Malgré toutes les erreurs d'implémentation présentées CI/CD/CD reste _best practice_
+
+---
+
+### JWST
+
+![JWST](images/jwst.png)
 
 ---
 
@@ -56,7 +58,7 @@ subgraph C[Container]
     C1 --> C1b[Wait for services...]
     C2 --> C2a["Launch Container"]
     C1b --> C2a
-    C2 --> C3['Wait for container']
+    C2 --> C3['Wait for Container']
     C1b --> C3
     C3 --> C4[Tests]
     C4 --> C5{Email?}
@@ -64,6 +66,8 @@ end
 
 Push --> B
 Push --> C
+
+B & C --> SR{Semantic-<br/>Release}
 
 ```
 
@@ -91,7 +95,7 @@ P --> R[(Package<br/>Registry)]
 
 ---
 
-# Sample Pipelines: CDeployment
+## Sample Pipelines: CDeployment
 
 ```mermaid
 flowchart LR
@@ -157,11 +161,56 @@ end
 
 ---
 
-# Et si on doit faire un rollback?
+# CI fournit pas
+
+![drone](images/drone.png)
+
+--
+
+## Upscaler Workers
+
+- Azure F16s_v4 -> F32s_v4
+- Ubuntu 18.04 LTS -> 20.04 LTS
+
+--
+
+```
+$ sudo docker ps -a
+CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES
+```
+
+--
+
+# Azure Linux VM Disk Layout
+
+- /: 30 Go SSD
+- /mnt: 100+ Go SSD **éphémère**
+- /mnt/\<path\>: On Demand SSD
+
+--
+
+# Morale
+
+- Bien connaître ses failure modes
+- Vérifier ses backups
 
 ---
 
+# Perdu
 
+- Docker Services
+- Docker Registry
+
+--
+
+## Re-remplir le registre
+
+```bash
+sudo docker image ls \
+    --format '{{.Repository}}:{{.Tag}}' | \
+    grep docker.fgf.cloud | \
+    xargs -n1 sudo docker push
+```
 
 ---
 
