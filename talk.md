@@ -20,11 +20,151 @@ theme: "black"
 
 Malgré toutes les erreurs d'implémentation présentées CI/CD/CD reste _best practice_
 
----
+--
 
 ### JWST
 
 ![JWST](images/jwst.png)
+
+---
+
+# Timeline
+
+- 5 juillet: OpenSSL Annonce 5 CVEs sous embargo
+- 6 juillet: CI fourni pas
+- 7 juillet: Date prévue du release de Node.JS patché
+- 8 juillet 16h: Release des containers Node.JS
+
+---
+
+# CI fournit pas
+
+![drone](images/drone.png)
+
+--
+
+## Upscaler Workers
+
+- Azure F16s_v4 -> F32s_v4
+- Ubuntu 18.04 LTS -> 20.04 LTS
+
+--
+
+## Qu'est-ce qui pourrait mal aller?
+
+- Repartir les Services
+- Disk Backup
+- Reconstituer les artéfacts à partir des tags
+
+--
+
+```
+$ sudo docker ps -a
+CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES
+```
+
+--
+
+# Perdu
+
+- Docker Services
+
+--
+
+# Perdu
+
+- ~~Docker Services~~
+- Docker Registry
+
+---
+
+## Re-remplir le registre
+
+```bash
+sudo docker image ls \
+    --format '{{.Repository}}:{{.Tag}}' | \
+    grep docker.fgf.cloud | \
+    xargs -n1 sudo docker push
+```
+
+---
+
+## Pipelines
+
+```mermaid
+flowchart LR
+
+T((Tag)) --> Assemble --> V[Validate] --> R[(Deliver<br/>Artifact)] --> D((Deploy))
+
+V --> D
+```
+
+--
+
+## Pipelines
+
+```mermaid
+flowchart LR
+
+T((Tag)) --> Assemble --> Validate --> D[(Deliver<br/>Artifact)]
+
+PR([Promote<br/>Tag]) --> R[(Pull<br/>Artifact)] --> D2((Deploy))
+```
+
+--
+
+# Perdu
+
+- ~~Docker Services~~
+- ~~Docker Registry~~
+- Build Database / History
+- Secrets
+
+--
+
+### Build History
+
+- Git contient encore les tags
+- Drone crée un pipeline de tag à la **création** d'un tag
+
+--
+
+### Secrets
+
+- AUTH0_CLIENT_ID
+- AUTH0_MANAGEMENT_CLIENT_ID
+- API_BACKEND_AUTH0_CLIENT_ID
+
+--
+
+### Secrets
+
+- API_AUTH0_CLIENT_ID
+- IDP_AUTH0_CLIENT_ID
+- WEB_AUTH0_CLIENT_ID
+
+---
+
+# Perdu
+
+- ~~Docker Services~~
+- ~~Docker Registry~~
+- ~~Build Database / History~~
+- ~~Secrets~~
+- Confiance des Devs
+- Temps
+
+---
+
+# Azure Linux VM Disk Layout
+
+- /: 30 Go SSD
+- /mnt: 100+ Go SSD **éphémère**
+- /mnt/\<path\>: On Demand SSD
+
+---
+
+# Questions?
 
 ---
 
@@ -127,95 +267,3 @@ subgraph CD[Deployment]
 end
 
 ```
-
----
-
-# Single Point of Failures
-
-- Drone (CI / CD / CD / Secrets)
-- Artifacts Storage:
-    - Verdaccio
-    - Artifactory
-    - Docker Registry
-
---
-
-## SPoFs: Artifact Storage
-
-- Restart Services
-- Disk Backup
-- Rebuild Package Index from Tags
-
---
-
-## SPoFs: Drone (CI / CDel / CDep / Secrets)
-
-- CI: Pipelines as Code
-- Secrets: Secrets Manager
-- CD:
-    - Artifact Storages
-    - Missing Secrets
-    - Firewalls
-- Backups
-- Tâches reproductibles
-
----
-
-# CI fournit pas
-
-![drone](images/drone.png)
-
---
-
-## Upscaler Workers
-
-- Azure F16s_v4 -> F32s_v4
-- Ubuntu 18.04 LTS -> 20.04 LTS
-
---
-
-```
-$ sudo docker ps -a
-CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES
-```
-
---
-
-# Azure Linux VM Disk Layout
-
-- /: 30 Go SSD
-- /mnt: 100+ Go SSD **éphémère**
-- /mnt/\<path\>: On Demand SSD
-
---
-
-# Morale
-
-- Bien connaître ses failure modes
-- Vérifier ses backups
-
----
-
-# Perdu
-
-- Docker Services
-- Docker Registry
-
---
-
-## Re-remplir le registre
-
-```bash
-sudo docker image ls \
-    --format '{{.Repository}}:{{.Tag}}' | \
-    grep docker.fgf.cloud | \
-    xargs -n1 sudo docker push
-```
-
----
-
-# Morales
-
-- fstab clair
-- Secrets Clairs
-- Stop the world upgrades?
